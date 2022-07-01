@@ -1,4 +1,4 @@
-# Temperature-Measuring-Circuit
+# Temperature-Measuring-Circuit Description
 Temperature Measuring Circuit using 8051, LM35 and ADC0808.
 ![plot](https://github.com/PhamVietThinh2803/Temperature-Measuring-Circuit/blob/main/Simulation%20Circuit.png)
 + 2 buttons to check and adjust the Temperature threshold (Default at 100oC)

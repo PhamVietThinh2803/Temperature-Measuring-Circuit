@@ -5,4 +5,3 @@ Temperature Measuring Circuit using 8051, LM35 and ADC0808.
 + Temperature range: 0 - 100 oC with resolution of 1oC.
 + When the Temperature is over the threshold, Led (Yellow) will turn on and can only turn it off when temperature is under the threshold and press the button.
 + Temperature display every 10 seconds to avoid interference.
-+ 

@@ -1,0 +1,340 @@
+Code cho mạch đo nhiệt độ (Hoàn thiện)
+;=================================
+; MACH DO NHIET DO VA CAI DAT CANH BAO
+;=================================
+begin bit p3.6
+eoc bit p3.7
+
+led6 bit p2.5
+led5 bit p2.4
+led4 bit p2.3
+led3 bit p2.2
+led2 bit p2.1
+led1 bit p2.0
+
+WARN bit p3.5
+
+	
+org 00h
+sjmp SET_UP
+org 0003h
+ljmp INT0_ISR
+org 0013h
+ljmp INT1_ISR
+org 000Bh
+ljmp T0_ISR
+org 30h	
+;=================================
+; CAU HINH CHO CAC NGAT
+;=================================
+SET_UP:  
+setb EX0 ; Enable External Interupt 0
+setb EX1 ; Enable External Interupt 1
+setb PX0 ; EX0 Priority
+setb PX1 ; EX1 Priority
+setb ET0 ; Timer 0 Interrupt Enable
+mov TMOD, #0x01 ; Timer 0 - Mode 1
+setb TR0        ; Timer Run
+setb EA         ; Interrupt Enable
+
+clr WARN
+mov 13h, #100
+
+chuyen_Doi:
+;=================================
+; KIEM TRA NGUONG
+;=================================
+mov a, p1
+cjne a, 13h, check
+ljmp nhap_nhay // Bang nguong --> Nhap nhay Led
+check:
+jnc nhap_nhay // C = 0 --> Vuot nguong --> Nhap nhay Led
+cjne r6,#0,checkReset // Nhiet do xuong nguong thi phai bam nut de thoat canh bao
+;=================================
+; HIEN THI LED 7 THANH (NHIET DO DUOI NGUONG)
+;=================================
+main:
+clr led6
+clr WARN
+mov r6, #0
+ljmp chuyen_Doi
+
+;=================================
+; CHUONG TRINH NHAP NHAY LED
+;=================================
+nhap_nhay:
+setb WARN
+mov r6, #1
+ljmp chuyen_Doi
+;=================================
+; AN NUT THOAT CANH BAO
+;=================================
+checkReset:
+jb p2.6 , nhap_nhay
+ljmp main
+;=================================
+; CHUONG TRINH PHUC VU NGAT NGOAI 0 (XEM NGUONG)
+;=================================
+INT0_ISR:
+jb p3.2, thoat
+lcall delay
+mov a, 13h
+mov b, #10
+div ab
+mov 10h,b // 10H chua hang don vi
+mov b, #10
+div ab
+mov 11h, b // 11H chua hang chuc
+mov 12h, a // 12H chua hang tram
+
+mov dptr,#900h
+
+mov a,10h
+movc a,@a + dptr
+mov 19h,a				//19h chua hang don vi
+
+mov a,11h
+movc a,@a + dptr
+mov 20h,a				 // 20h chua hang chuc
+
+mov a,12h
+movc a,@a + dptr
+mov 21h,a				// 21h chua hang tram
+
+mov p0,21h
+setb led1
+lcall delay
+anl p2,#11000000B
+	
+mov p0,20h
+setb led2
+lcall delay
+anl p2,#11000000B	   
+
+mov p0,19h
+setb led3
+lcall delay
+anl p2,#11000000B
+
+mov p0,#063h
+setb led4
+lcall delay
+anl p2,#11000000B
+
+mov p0,#039h
+setb led5
+lcall delay
+anl p2,#11000000B 
+
+mov p0,#039h
+setb led6
+lcall delay
+anl p2,#11000000B 
+
+thoat:
+reti
+
+;=================================
+; CHUONG TRINH PHUC VU NGAT NGOAI 1 ( DAT NGUONG )
+;=================================
+INT1_ISR:
+lcall delay1s
+jb p3.3, exit2
+mov R1, 13h ; Day tam thoi 13h vao A 
+cjne R1, #151, NEXT1; Tang nguong qua 150 do thi reset ve 0
+mov 13h, #0
+exit2:
+RETI
+
+NEXT1:
+lcall delay1s
+inc 13h
+mov a, 13h
+mov b, #10
+div ab
+mov 10h,b // 10H chua hang don vi
+mov b, #10
+div ab
+mov 11h, b // 11H chua hang chuc
+mov 12h, a // 12H chua hang tram
+
+mov dptr,#900h
+
+mov a,10h
+movc a,@a + dptr
+mov 19h,a				//19h chua hang don vi
+
+mov a,11h
+movc a,@a + dptr
+mov 20h,a				 // 20h chua hang chuc
+
+mov a,12h
+movc a,@a + dptr
+mov 21h,a				// 21h chua hang tram
+
+mov p0,21h
+setb led1
+lcall delay1s
+anl p2,#11000000B
+	
+mov p0,20h
+setb led2
+lcall delay1s
+anl p2,#11000000B	   
+
+mov p0,19h
+setb led3
+lcall delay1s
+anl p2,#11000000B
+
+mov p0,#063h
+setb led4
+lcall delay1s
+anl p2,#11000000B
+
+mov p0,#03fh
+setb led5
+lcall delay1s
+anl p2,#11000000B 
+
+mov p0,#03fh
+setb led6
+lcall delay1s
+anl p2,#11000000B 
+reti
+
+nhap_nhay_T0_0:
+ljmp nhap_nhay_T0
+ret
+
+;=================================
+; CHUONG TRINH PHUC VU NGAT TIMER 0 
+;=================================
+T0_ISR:
+mov R4, #0
+loop:
+inc R4
+setb TR0 ; Cho timer 0 chay
+jb TF0, con ; Timer chua tran thi tiep tuc hien nhiet do hien tai, tran thi nhay den chuong trinh con
+clr TR0  ; Dung Timer
+clr TF0  ; Xoa co tran
+
+mov a, p1
+so_sanh:
+cjne a, 13h, check_temp
+ljmp nhap_nhay_T0
+
+check_temp:
+jnc nhap_nhay_T0_0
+
+mov b, #10
+div ab
+mov 10h,b // 10H chua hang don vi
+mov b, #10
+div ab
+mov 11h, b // 11H chua hang chuc
+mov 12h, a // 12H chua hang tram
+
+mov dptr,#900h
+
+mov a,10h
+movc a,@a + dptr
+mov 19h,a				//19h chua hang don vi
+
+mov a,11h
+movc a,@a + dptr
+mov 20h,a				 // 20h chua hang chuc
+
+mov a,12h
+movc a,@a + dptr
+mov 21h,a				// 21h chua hang tram
+
+mov p0,21h
+setb led1
+lcall delay1s
+anl p2,#11000000B 
+	
+mov p0,20h
+setb led2
+lcall delay1s
+anl p2,#11000000B 
+
+mov p0,19h
+setb led3
+lcall delay1s
+anl p2,#11000000B 
+
+mov p0,#063h
+setb led4
+lcall delay1s
+anl p2,#11000000B 
+
+mov p0,#039h
+setb led5
+lcall delay1s
+anl p2,#11000000B
+
+con:
+cjne R4, #100, loop
+
+clr begin   
+setb begin  // Bat dau chuyen doi
+jb eoc, $   // Doi ket thuc chuyen doi
+clr begin   // Dung chuyen doi
+
+mov a,p1
+// Nap lai gia tri cho Timer
+clr TF0
+clr TR0
+mov TMOD, #0x01
+setb TR0
+RETI
+
+
+;=================================
+; DELAY HIEN THI LED 7 THANH
+;=================================
+
+delay: 
+mov r7,#50
+djnz r7,$
+ret	 
+
+delay1s:
+MOV 50H, #20
+lap: MOV 51H,#255
+djnz 51H,$
+djnz 50H,lap
+ret
+
+nhap_nhay_T0:
+setb WARN
+mov r6, #1
+mov p0,#07fh
+setb led1
+lcall delay
+anl p2,#11000000B
+mov p0,#07fh
+setb led2
+lcall delay
+anl p2,#11000000B
+mov p0,#07fh
+setb led3
+lcall delay
+anl p2,#11000000B
+mov p0,#07fh
+setb led4
+lcall delay
+anl p2,#11000000B
+mov p0,#07fh
+setb led5
+lcall delay
+anl p2,#11000000B
+ljmp con
+
+;=================================
+; MA HEXA CHO LED 7 THANH
+;=================================	
+org 900h
+db 03fh,006h,05bh,04fh,066h,06dh,07dh,007h,07fh,06fh
+END

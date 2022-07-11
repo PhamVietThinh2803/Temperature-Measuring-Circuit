@@ -8,5 +8,7 @@ Mạch đo nhiệt độ sử dụng LM35, ADC0808 và 8051
   1. Sử dụng D-FF hoạt động với xung clock có chu kỳ T = 10s. Sử dụng D-FF tạo độ trễ ổn định, tuy nhiên, khó tạo xung clock có chu kỳ T = 10s, cũng như làm tăng kích cỡ của mạch đo.
 
 
-![plot](https://github.com/PhamVietThinh2803/Temperature-Measuring-Circuit/blob/main/D-FF.png))
+![plot](https://github.com/PhamVietThinh2803/Temperature-Measuring-Circuit/blob/main/D-FF.png)
+
+
   2. Sử dụng ngắt Timer của 8051. Không cần thêm linh kiện nhưng sẽ khó khăn hơn về phần mềm. (Nhóm sẽ sử dụng cách này để hiểu hơn về ngắt Timer)

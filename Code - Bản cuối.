@@ -61,53 +61,6 @@ jmp $
 ;=================================
 ; CHUONG TRINH PHUC VU NGAT NGOAI 0 (XEM NGUONG)
 ;=================================
-INT0_ISR:
-clr WARN
-jb p3.2, thoat
-lcall delay
-mov a, 13h
-mov b, #10
-div ab
-mov 10h,b // 10H chua hang don vi
-mov b, #10
-div ab
-mov 11h, b // 11H chua hang chuc
-mov 12h, a // 12H chua hang tram
-
-mov dptr,#900h
-
-mov a,10h
-movc a,@a + dptr
-mov 19h,a				//19h chua hang don vi
-
-mov a,11h
-movc a,@a + dptr
-mov 20h,a				 // 20h chua hang chuc
-
-mov a,12h
-movc a,@a + dptr
-mov 21h,a				// 21h chua hang tram
-
-mov p0,21h
-setb led1
-lcall delay
-anl p2,#11000000B
-	
-mov p0,20h
-setb led2
-lcall delay
-anl p2,#11000000B	   
-
-mov p0,19h
-setb led3
-lcall delay
-anl p2,#11000000B
-thoat:
-reti
-
-;=================================
-; CHUONG TRINH PHUC VU NGAT NGOAI 0 (XEM NGUONG)
-;=================================
 ;INT0_ISR:
 ;setb WARN
 ;jb p3.2, thoat

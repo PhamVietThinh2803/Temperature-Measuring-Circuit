@@ -4,7 +4,6 @@
 start bit p2.5
 eoc bit p2.6
 ale bit p2.7
-
 led6 bit p2.4
 led5 bit p2.3
 led4 bit p2.2

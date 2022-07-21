@@ -3,10 +3,10 @@
 ;=================================
 begin bit p3.6
 eoc bit p3.7
-
-;led6 bit p2.5  //Cháy Led nên tạm thời dùng Led 1,2,3
-;led5 bit p2.4  //Cháy Led nên tạm thời dùng Led 1,2,3
-;led4 bit p2.3  //Cháy Led nên tạm thời dùng Led 1,2,3
+	
+;led6 bit p2.5	// Den Led bi hong nen chi dung Led1,2,3
+;led5 bit p2.4	// Den Led bi hong nen chi dung Led1,2,3	
+;led4 bit p2.3	// Den Led bi hong nen chi dung Led1,2,3
 led3 bit p2.2
 led2 bit p2.1
 led1 bit p2.0
@@ -50,19 +50,21 @@ jnc nhap_nhay // C = 0 --> Vuot nguong --> Nhap nhay Led
 ; HIEN THI LED 7 THANH (NHIET DO DUOI NGUONG)
 ;=================================
 main:
+clr WARN
 mov r6, #0
 jmp $
 ;=================================
 ; CHUONG TRINH NHAP NHAY LED
 ;=================================
 nhap_nhay:
+setb WARN
 mov r6, #1
 jmp $
 ;=================================
 ; CHUONG TRINH PHUC VU NGAT NGOAI 0 (XEM NGUONG)
 ;=================================
 ;INT0_ISR:
-;setb WARN
+;clr WARN
 ;jb p3.2, thoat
 ;lcall delay
 ;mov a, 13h
@@ -102,22 +104,6 @@ jmp $
 ;setb led3
 ;lcall delay
 ;anl p2,#11000000B
-
-;mov p0,#063h
-;setb led4
-;lcall delay
-;anl p2,#11000000B
-
-;mov p0,#039h
-;setb led5
-;lcall delay
-;anl p2,#11000000B 
-
-;mov p0,#039h
-;setb led6
-;lcall delay
-;anl p2,#11000000B 
-
 ;thoat:
 ;reti
 
@@ -202,6 +188,7 @@ cjne r6, #0, button_press
 sjmp loop
 button_press:
 jb p2.6, nhap_nhay_T0_0
+mov r6, #0
 clr WARN
 mov R4, #0
 loop:

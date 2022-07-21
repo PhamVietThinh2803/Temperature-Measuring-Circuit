@@ -28,7 +28,6 @@ setb EX1 ; Enable External Interupt 1
 setb PX1
 clr WARN
 mov 13h, #100
-
 ;=================================
 ; DOC MA TU ADC
 ;=================================

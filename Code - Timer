@@ -14,7 +14,6 @@ led1 bit p2.0
 
 WARN bit p3.5
 
-	
 org 00h
 sjmp SET_UP
 org 0003h
